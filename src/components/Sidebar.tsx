@@ -21,8 +21,8 @@ export default function NostalgieSidebar() {
 
   return (
     <div 
-      className={`bg-white h-screen relative ${
-        isCollapsed ? 'w-20' : 'w-72'
+      className={`bg-white h-screen relative  ${
+        isCollapsed ? 'w-20  ' : 'w-72'
       }`}
       style={{ 
         borderRight: '1px solid #E5E7EB',
@@ -31,8 +31,9 @@ export default function NostalgieSidebar() {
       }}
     >
       {/* Logo/Header */}
-      <div 
-        className="h-24 flex items-center justify-between px-6 border-b relative overflow-hidden"
+  {/* Logo/Header */}
+  <div 
+        className="h-16 flex items-center px-4 border-b relative overflow-hidden"
         style={{ 
           background: 'linear-gradient(135deg, #FFFAF0 0%, #FFFFFF 100%)',
           borderColor: '#E5E7EB'
@@ -40,98 +41,62 @@ export default function NostalgieSidebar() {
       >
         <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent opacity-50"></div>
         
-        <div className="relative z-10 flex items-center gap-3 w-full">
-          {/* Expanded Logo */}
-          <div 
-            className={`absolute left-6 transition-opacity duration-500 ease-in-out ${
-              isCollapsed ? 'opacity-0 invisible' : 'opacity-100 visible'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <div 
-                className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
-                style={{ 
-                  background: 'linear-gradient(135deg, #FF8C00 0%, #FFD700 100%)',
-                  boxShadow: '0 4px 12px rgba(255, 140, 0, 0.2)'
-                }}
-              >
-                <Sparkles size={20} className="text-white" />
-              </div>
-              <div className="flex flex-col flex-1 min-w-0">
-                <h1 
-                  className="text-xl font-bold tracking-tight overflow-hidden text-ellipsis whitespace-nowrap"
-                  style={{ color: '#1F2937', fontFamily: 'Poppins, sans-serif' }}
-          >
-            Nostalgie
-          </h1>
-                <p className="text-xs overflow-hidden text-ellipsis whitespace-nowrap" style={{ color: '#9CA3AF' }}>
-                  Restaurant Admin
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Collapsed Logo */}
-          <div 
-            className={`absolute left-1/2 -translate-x-1/2 transition-opacity duration-500 ease-in-out ${
-              isCollapsed ? 'opacity-100 visible' : 'opacity-0 invisible'
-            }`}
-          >
-            <div 
-              className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm"
-              style={{ 
-                background: 'linear-gradient(135deg, #FF8C00 0%, #FFD700 100%)',
-                boxShadow: '0 4px 12px rgba(255, 140, 0, 0.2)'
-              }}
-            >
-              <Sparkles size={22} className="text-white" />
-            </div>
-          </div>
-          
-          {/* Toggle Button in Header */}
+        <div className="relative z-10 flex items-center w-full">
+          {/* Hamburger Menu Button - Always Visible */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className={`absolute top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all duration-300 hover:scale-110 active:scale-95 group ${
-              isCollapsed ? 'right-2' : 'right-2'
-            }`}
+            className="p-2 rounded-lg transition-all duration-300 hover:bg-orange-50 active:scale-95 shrink-0"
             style={{
               background: 'transparent',
-              color: '#9CA3AF'
+              color: '#FF8C00'
             }}
             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            <div 
-              className="w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:rotate-180"
-              style={{ 
-                background: isCollapsed 
-                  ? '#F9FAFB' 
-                  : '#F9FAFB',
-                border: '1px solid #E5E7EB',
-                color: '#6B7280'
-              }}
-            >
-              {isCollapsed ? (
-                <ChevronRight size={16} />
-              ) : (
-                <ChevronLeft size={16} />
-              )}
+            <div className="relative w-5 h-5 flex flex-col justify-center gap-1">
+              <span 
+                className="block h-0.5 rounded-full transition-all duration-300"
+                style={{ 
+                  background: '#FF8C00',
+                  width: '100%'
+                }}
+              />
+              <span 
+                className="block h-0.5 rounded-full transition-all duration-300"
+                style={{ 
+                  background: '#FF8C00',
+                  width: '100%'
+                }}
+              />
+              <span 
+                className="block h-0.5 rounded-full transition-all duration-300"
+                style={{ 
+                  background: '#FF8C00',
+                  width: '100%'
+                }}
+              />
             </div>
-            {/* Tooltip */}
-            {!isCollapsed && (
-              <div className="absolute right-full mr-2 top-1/2 transform -translate-y-1/2 whitespace-nowrap px-2 py-1 rounded-lg text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-lg"
-                   style={{ 
-                     background: '#1F2937', 
-                     color: '#FFFFFF' 
-                   }}>
-                Collapse
-              </div>
-            )}
           </button>
+
+          {/* Admin Text - Only when expanded */}
+          {!isCollapsed && (
+            <div className="ml-4 flex flex-col">
+              <h1 
+                className="text-lg font-bold tracking-tight"
+                style={{ color: '#1F2937', fontFamily: 'Poppins, sans-serif' }}
+              >
+                Admin
+              </h1>
+              <p className="text-xs" style={{ color: '#9CA3AF' }}>
+                Restaurant Dashboard
+              </p>
+            </div>
+          )}
         </div>
-      </div>
+      </div>      {/* Logo/Header */}
+    
 
       {/* Navigation Items */}
-      <nav className="py-3 px-2 overflow-y-auto custom-scrollbar" style={{ height: 'calc(100vh - 96px)' }}>
+      <nav className="py-3 px-2 overflow-y-auto  scrollbar-hide" style={{ height: 'calc(100vh - 96px)' }}>
         <ul className="space-y-0.5">
           {menuItems.map((item) => {
             const Icon = item.icon;
