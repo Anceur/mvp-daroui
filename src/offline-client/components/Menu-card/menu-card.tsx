@@ -20,9 +20,9 @@ interface MenuItem {
 }
 
 const categoryColors: Record<string, { bg: string; text: string }> = {
-  pizza: { bg: "bg-orange-50", text: "text-orange-700" },
+  pizza: { bg: "bg-[#fdf6e5]", text: "text-[#e7c078]" },
   salad: { bg: "bg-green-50", text: "text-green-700" },
-  burger: { bg: "bg-yellow-50", text: "text-yellow-700" },
+  burger: { bg: "bg-[#fdf6e5]", text: "text-[#e7c078]" },
   deserts: { bg: "bg-purple-50", text: "text-purple-700" },
   meat: { bg: "bg-red-50", text: "text-red-700" },
   pasta: { bg: "bg-blue-50", text: "text-blue-700" },
@@ -33,7 +33,11 @@ interface MenuCardProps {
 }
 
 export default function MenuCard({ item }: MenuCardProps) {
-  const [selectedSize, setSelectedSize] = useState<"M" | "L" | "Mega" | null>(null)
+  // Auto-select "M" if there's only one size (default size)
+  const hasOnlyDefaultSize = item.sizes && item.sizes.length === 1 && item.sizes[0].size === "M"
+  const [selectedSize, setSelectedSize] = useState<"M" | "L" | "Mega" | null>(
+    hasOnlyDefaultSize ? "M" : null
+  )
   const [isAdding, setIsAdding] = useState(false)
   const { addToCart } = useCart()
 
@@ -51,8 +55,8 @@ export default function MenuCard({ item }: MenuCardProps) {
   }
 
   const handleAddToCart = () => {
-    // Don't allow adding if item has sizes but no size is selected
-    if (item.sizes && item.sizes.length > 0 && !selectedSize) {
+    // Don't allow adding if item has multiple sizes but no size is selected
+    if (item.sizes && item.sizes.length > 1 && !selectedSize) {
       return
     }
     
@@ -68,10 +72,11 @@ export default function MenuCard({ item }: MenuCardProps) {
   }
 
   // Check if button should be disabled
-  const isButtonDisabled = isAdding || (item.sizes && item.sizes.length > 0 && !selectedSize)
+  // Disable only if item has multiple sizes and no size is selected
+  const isButtonDisabled = isAdding || (item.sizes && item.sizes.length > 1 && !selectedSize)
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-full w-full border border-gray-200 hover:border-orange-300 group">
+    <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-full w-full border border-gray-200 hover:border-[#e7c078] group">
       {/* Image Section - Reduced height */}
       <div className="relative h-40 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
         {item.image ? (
@@ -93,13 +98,12 @@ export default function MenuCard({ item }: MenuCardProps) {
           </div>
         )}
         
-        {/* Featured Badge */}
-        {/* {item.featured && (
-          <div className="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1">
+        {item.featured && (
+          <div className="absolute top-2 right-2 bg-[#e7c078] text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1">
             <span>⭐</span>
             <span>Featured</span>
           </div>
-        )} */}
+        )}
         
         {/* Category Badge - Top Left */}
         <div className="absolute top-2 left-2">
@@ -123,8 +127,8 @@ export default function MenuCard({ item }: MenuCardProps) {
           </p>
         )}
 
-        {/* Size Selection */}
-        {item.sizes && item.sizes.length > 0 && (
+        {/* Size Selection - Only show if more than one size */}
+        {item.sizes && item.sizes.length > 1 && (
           <div className="mb-3">
             <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Choose Size</p>
             <div className="flex gap-1.5">
@@ -134,8 +138,8 @@ export default function MenuCard({ item }: MenuCardProps) {
                   onClick={() => setSelectedSize(sizeOption.size)}
                   className={`flex-1 py-2 px-2 rounded-lg font-semibold text-xs transition-all duration-200 ${
                     selectedSize === sizeOption.size
-                      ? "bg-orange-500 text-white shadow-md ring-2 ring-orange-300"
-                      : "bg-gray-100 text-gray-700 hover:bg-orange-50 hover:text-orange-600 border border-gray-200"
+                      ? "bg-[#e7c078] text-white shadow-md ring-2 ring-[#d9b76b]"
+                      : "bg-gray-100 text-gray-700 hover:bg-[#fdf6e5] hover:text-[#e7c078] border border-gray-200"
                   }`}
                 >
                   <div className="text-center">
@@ -155,10 +159,30 @@ export default function MenuCard({ item }: MenuCardProps) {
         <div className="border-t border-gray-100 pt-3 mt-1">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="text-xl font-bold text-orange-600">
+              {item.sizes && item.sizes.length > 1 ? (
+                selectedSize ? (
+                  <>
+                    <div className="text-xl font-bold text-[#e7c078]">
+                      ${getCurrentPrice().toFixed(2)}
+                    </div>
+                    <div className="text-[10px] text-gray-500">DA</div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-xl font-bold text-[#e7c078]">
+                      ${Number(item.price).toFixed(2)}
+                    </div>
+                    <div className="text-[10px] text-gray-500">DA</div>
+                  </>
+                )
+              ) : (
+                <>
+                  <div className="text-xl font-bold text-[#e7c078]">
                 ${getCurrentPrice().toFixed(2)}
               </div>
               <div className="text-[10px] text-gray-500">DA</div>
+                </>
+              )}
             </div>
           </div>
 
@@ -171,7 +195,7 @@ export default function MenuCard({ item }: MenuCardProps) {
                 ? "bg-green-500 text-white scale-95"
                 : isButtonDisabled
                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                : "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95"
+                : "bg-[#e7c078] hover:bg-[#d9b76b] text-white shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95"
             }`}
           >
             {isAdding ? (
@@ -179,7 +203,7 @@ export default function MenuCard({ item }: MenuCardProps) {
                 <span>✓</span>
                 <span>Ajouté!</span>
               </>
-            ) : (item.sizes && item.sizes.length > 0 && !selectedSize) ? (
+            ) : (item.sizes && item.sizes.length > 1 && !selectedSize) ? (
               <>
                 <span>⚠️</span>
                 <span>Sélectionnez une taille</span>

@@ -208,6 +208,18 @@ export default function OrderTypeDrawer({
                         />
                       </div>
 
+                      {/* Honeypot field - hidden from users, bots may fill it */}
+                      <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
+                        <label htmlFor="website-dinein">Website (leave blank)</label>
+                        <input
+                          type="text"
+                          id="website-dinein"
+                          name="website"
+                          tabIndex={-1}
+                          autoComplete="off"
+                        />
+                      </div>
+
                       <div className="border-t pt-4 w-full">
                         <div className="flex justify-between text-sm mb-3">
                           <span>Total:</span>

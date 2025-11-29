@@ -120,7 +120,7 @@ export default function HomePage({ tableNumber: tableNumberProp }: HomePageProps
           </p>
           <button
             onClick={() => navigate('/')}
-            className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+            className="px-6 py-3 bg-[#e7c078] text-white rounded-lg hover:bg-[#d9b76b] transition-colors font-semibold"
           >
             Go to Home
           </button>
@@ -143,7 +143,7 @@ export default function HomePage({ tableNumber: tableNumberProp }: HomePageProps
           </p>
           <button
             onClick={() => navigate('/')}
-            className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+            className="px-6 py-3 bg-[#e7c078] text-white rounded-lg hover:bg-[#d9b76b] transition-colors font-semibold"
           >
             Go to Home
           </button>
@@ -195,7 +195,7 @@ export default function HomePage({ tableNumber: tableNumberProp }: HomePageProps
                 <p className="text-gray-600 text-sm">{error}</p>
                 <button 
                   onClick={() => window.location.reload()} 
-                  className="mt-4 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600"
+                  className="mt-4 px-4 py-2 bg-[#e7c078] text-white rounded-lg hover:bg-[#d9b76b]"
                 >
                   Retry
                 </button>

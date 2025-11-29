@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, RefreshCw, ChevronDown, ChevronLeft, ChevronRight, Plus, Edit, Trash2, Tag, DollarSign, X, Save, Loader2, AlertCircle, Cookie } from 'lucide-react';
+import { Search, RefreshCw, ChevronDown, ChevronLeft, ChevronRight, Plus, Edit, Trash2, Tag, DollarSign, X, Save, Loader2, AlertCircle } from 'lucide-react';
 import { getMenuItems, createMenuItem, updateMenuItem, patchMenuItem, deleteMenuItem } from '../../shared/api/menu-items';
 import type { MenuItem, CreateMenuItemData, UpdateMenuItemData } from '../../shared/api/menu-items';
-import { getIngredients } from '../../shared/api/ingredients';
-import { getMenuItemIngredients, createMenuItemIngredient, updateMenuItemIngredient, deleteMenuItemIngredient } from '../../shared/api/menu-item-ingredients';
-import type { MenuItemIngredient, CreateMenuItemIngredientData } from '../../shared/api/menu-item-ingredients';
-import type { Ingredient } from '../../shared/api/ingredients';
 
 export default function MenuProducts() {
   const [activeTab, setActiveTab] = useState<string>('All');
@@ -36,20 +32,6 @@ export default function MenuProducts() {
     featured: false,
   });
 
-  // Ingredients management state
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [selectedItemForIngredients, setSelectedItemForIngredients] = useState<MenuItem | null>(null);
-  const [itemIngredients, setItemIngredients] = useState<MenuItemIngredient[]>([]);
-  const [isIngredientsModalOpen, setIsIngredientsModalOpen] = useState<boolean>(false);
-  const [isIngredientFormOpen, setIsIngredientFormOpen] = useState<boolean>(false);
-  const [editingItemIngredient, setEditingItemIngredient] = useState<MenuItemIngredient | null>(null);
-  const [ingredientFormData, setIngredientFormData] = useState<CreateMenuItemIngredientData>({
-    menu_item_id: 0,
-    ingredient_id: 0,
-    quantity: 0,
-  });
-  const [submittingIngredient, setSubmittingIngredient] = useState<boolean>(false);
-  const [deleteIngredientConfirm, setDeleteIngredientConfirm] = useState<number | null>(null);
 
   const categories = ['All', 'burger', 'pizza', 'sandwich', 'plat', 'tacos', 'desserts', 'drinks'];
   
@@ -80,107 +62,10 @@ export default function MenuProducts() {
     }
   }, []);
 
-  // Fetch ingredients
-  const fetchIngredients = useCallback(async () => {
-    try {
-      const data = await getIngredients();
-      setIngredients(data);
-    } catch (err: any) {
-      console.error('Error fetching ingredients:', err);
-    }
-  }, []);
-
-  // Fetch item ingredients
-  const fetchItemIngredients = async () => {
-    if (!selectedItemForIngredients) return;
-    try {
-      const data = await getMenuItemIngredients(selectedItemForIngredients.id);
-      setItemIngredients(data);
-    } catch (err: any) {
-      console.error('Error fetching item ingredients:', err);
-    }
-  };
-
-  // Handle manage ingredients
-  const handleManageIngredients = async (item: MenuItem) => {
-    // Check if item has sizes - if it does, ingredients should be managed via MenuItemSizes page
-    // For now, we'll allow managing ingredients for all items
-    setSelectedItemForIngredients(item);
-    setIsIngredientsModalOpen(true);
-    await fetchItemIngredients();
-  };
-
-  // Handle ingredient form submit
-  const handleIngredientSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedItemForIngredients || ingredientFormData.ingredient_id === 0) {
-      setError('Please select an ingredient');
-      return;
-    }
-    try {
-      setSubmittingIngredient(true);
-      setError(null);
-
-      if (editingItemIngredient) {
-        await updateMenuItemIngredient(editingItemIngredient.id, ingredientFormData);
-      } else {
-        await createMenuItemIngredient({
-          ...ingredientFormData,
-          menu_item_id: selectedItemForIngredients.id,
-        });
-      }
-
-      setIngredientFormData({ menu_item_id: 0, ingredient_id: 0, quantity: 0 });
-      setEditingItemIngredient(null);
-      setIsIngredientFormOpen(false);
-      await fetchItemIngredients();
-    } catch (err: any) {
-      setError(err.message || 'Failed to save ingredient');
-      console.error('Error saving ingredient:', err);
-    } finally {
-      setSubmittingIngredient(false);
-    }
-  };
-
-  // Handle edit ingredient
-  const handleEditIngredient = (itemIngredient: MenuItemIngredient) => {
-    setEditingItemIngredient(itemIngredient);
-    setIngredientFormData({
-      menu_item_id: itemIngredient.menu_item_id || selectedItemForIngredients?.id || 0,
-      ingredient_id: itemIngredient.ingredient_id || itemIngredient.ingredient.id,
-      quantity: itemIngredient.quantity,
-    });
-    setIsIngredientFormOpen(true);
-  };
-
-  // Handle delete ingredient
-  const handleDeleteIngredient = async (id: number) => {
-    try {
-      setError(null);
-      await deleteMenuItemIngredient(id);
-      setDeleteIngredientConfirm(null);
-      await fetchItemIngredients();
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete ingredient');
-      console.error('Error deleting ingredient:', err);
-    }
-  };
-
-  // Open new ingredient form
-  const openNewIngredientForm = () => {
-    setEditingItemIngredient(null);
-    setIngredientFormData({
-      menu_item_id: selectedItemForIngredients?.id || 0,
-      ingredient_id: 0,
-      quantity: 0,
-    });
-    setIsIngredientFormOpen(true);
-  };
 
   useEffect(() => {
     fetchMenuItems();
-    fetchIngredients();
-  }, [fetchMenuItems, fetchIngredients]);
+  }, [fetchMenuItems]);
 
   // Filter and sort items
   const filteredItems = menuItems
@@ -449,15 +334,7 @@ export default function MenuProducts() {
                     <span className="text-sm text-gray-500">{categoryLabels[item.category] || item.category}</span>
                   </div>
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">{item.description || 'No description'}</p>
-                  <div className="flex justify-between items-center">
-                    <button
-                      onClick={() => handleManageIngredients(item)}
-                      className="text-green-600 hover:text-green-700 flex items-center gap-1"
-                      title="Manage Ingredients"
-                    >
-                      <Cookie size={16} />
-                      Ingredients
-                    </button>
+                  <div className="flex justify-end items-center">
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(item)}
@@ -701,218 +578,6 @@ export default function MenuProducts() {
         </div>
       )}
 
-      {/* Ingredients Management Modal */}
-      {isIngredientsModalOpen && selectedItemForIngredients && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h2 className="text-xl font-bold" style={{ color: '#FF8C00' }}>
-                  Ingredients for {selectedItemForIngredients.name}
-                </h2>
-                <p className="text-sm text-gray-500 mt-1">Manage ingredients and quantities for this menu item</p>
-              </div>
-              <button
-                onClick={() => {
-                  setIsIngredientsModalOpen(false);
-                  setSelectedItemForIngredients(null);
-                  setItemIngredients([]);
-                  setIsIngredientFormOpen(false);
-                }}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            {/* Add Ingredient Button */}
-            <div className="mb-4">
-              <button
-                onClick={openNewIngredientForm}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-white transition-all"
-                style={{ backgroundColor: '#FF8C00' }}
-              >
-                <Plus size={18} />
-                Add Ingredient
-              </button>
-            </div>
-
-            {/* Ingredients List */}
-            {itemIngredients.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Cookie size={48} className="mx-auto mb-2 opacity-50" />
-                <p>No ingredients added yet. Click "Add Ingredient" to get started.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-gray-50" style={{ borderBottom: '1px solid #FFD700' }}>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ingredient</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {itemIngredients.map((itemIngredient) => (
-                      <tr key={itemIngredient.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {itemIngredient.ingredient.name}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {Number(itemIngredient.quantity).toFixed(2)}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {itemIngredient.ingredient.unit}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex justify-end gap-2">
-                            <button
-                              onClick={() => handleEditIngredient(itemIngredient)}
-                              className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
-                            >
-                              <Edit size={16} />
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => setDeleteIngredientConfirm(itemIngredient.id)}
-                              className="text-red-600 hover:text-red-900 flex items-center gap-1"
-                            >
-                              <Trash2 size={16} />
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Add/Edit Ingredient Form Modal */}
-            {isIngredientFormOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[60] p-4">
-                <div className="bg-white rounded-lg max-w-md w-full p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold" style={{ color: '#FF8C00' }}>
-                      {editingItemIngredient ? 'Edit Ingredient' : 'Add Ingredient'}
-                    </h3>
-                    <button
-                      onClick={() => {
-                        setIsIngredientFormOpen(false);
-                        setEditingItemIngredient(null);
-                        setIngredientFormData({ menu_item_id: 0, ingredient_id: 0, quantity: 0 });
-                      }}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      <X size={24} />
-                    </button>
-                  </div>
-
-                  <form onSubmit={handleIngredientSubmit} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Ingredient *
-                      </label>
-                      <select
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        value={ingredientFormData.ingredient_id}
-                        onChange={(e) => setIngredientFormData({ ...ingredientFormData, ingredient_id: parseInt(e.target.value) })}
-                        disabled={editingItemIngredient !== null}
-                      >
-                        <option value={0}>Select an ingredient</option>
-                        {ingredients.map((ingredient) => (
-                          <option key={ingredient.id} value={ingredient.id}>
-                            {ingredient.name} ({ingredient.unit})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Quantity *
-                      </label>
-                      <input
-                        type="number"
-                        required
-                        min="0"
-                        step="0.01"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        value={ingredientFormData.quantity}
-                        onChange={(e) => setIngredientFormData({ ...ingredientFormData, quantity: parseFloat(e.target.value) || 0 })}
-                        placeholder="0.00"
-                      />
-                    </div>
-
-                    <div className="flex gap-2 pt-4">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsIngredientFormOpen(false);
-                          setEditingItemIngredient(null);
-                          setIngredientFormData({ menu_item_id: 0, ingredient_id: 0, quantity: 0 });
-                        }}
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                        disabled={submittingIngredient}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="flex-1 px-4 py-2 rounded-lg text-white flex items-center justify-center gap-2"
-                        style={{ backgroundColor: '#FF8C00' }}
-                        disabled={submittingIngredient}
-                      >
-                        {submittingIngredient ? (
-                          <>
-                            <Loader2 size={18} className="animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>
-                            <Save size={18} />
-                            Save
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            {/* Delete Ingredient Confirmation */}
-            {deleteIngredientConfirm && (
-              <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[60] p-4">
-                <div className="bg-white rounded-lg max-w-md w-full p-6">
-                  <h3 className="text-lg font-bold mb-4" style={{ color: '#FF8C00' }}>Confirm Delete</h3>
-                  <p className="text-gray-600 mb-6">
-                    Are you sure you want to remove this ingredient? This action cannot be undone.
-                  </p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setDeleteIngredientConfirm(null)}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => handleDeleteIngredient(deleteIngredientConfirm)}
-                      className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

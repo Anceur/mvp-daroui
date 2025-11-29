@@ -189,6 +189,18 @@ export default function DeliveryDetailsDrawer({
                 />
               </div>
 
+              {/* Honeypot field - hidden from users, bots may fill it */}
+              <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
+                <label htmlFor="website">Website (leave blank)</label>
+                <input
+                  type="text"
+                  id="website"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
+
                 <div className="border-t pt-4 mt-auto">
                   <div className="flex justify-between text-sm mb-2">
                     <span>Total:</span>

@@ -12,7 +12,7 @@ export default function IngredientsManagement() {
   const [editingIngredient, setEditingIngredient] = useState<Ingredient | null>(null);
   const [formData, setFormData] = useState<CreateIngredientData>({
     name: '',
-    unit: 'g',
+    unit: 'kg',
   });
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
@@ -58,7 +58,7 @@ export default function IngredientsManagement() {
       }
 
       // Reset form and close modal
-      setFormData({ name: '', unit: 'g' });
+      setFormData({ name: '', unit: 'kg' });
       setEditingIngredient(null);
       setIsModalOpen(false);
       
@@ -98,7 +98,7 @@ export default function IngredientsManagement() {
   // Open modal for new ingredient
   const openNewModal = () => {
     setEditingIngredient(null);
-    setFormData({ name: '', unit: 'g' });
+    setFormData({ name: '', unit: 'kg' });
     setIsModalOpen(true);
   };
 
@@ -249,14 +249,16 @@ export default function IngredientsManagement() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Unit *
                 </label>
-                <input
-                  type="text"
+                <select
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   value={formData.unit}
                   onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                  placeholder="e.g., g, ml, piece"
-                />
+                >
+                  <option value="kg">kg</option>
+                  <option value="l">l (Liters)</option>
+                  <option value="piece">piece</option>
+                </select>
               </div>
 
               <div className="flex gap-2 pt-4">

@@ -34,7 +34,11 @@ interface MenuCardProps {
 }
 
 export default function MenuCard({ item }: MenuCardProps) {
-  const [selectedSize, setSelectedSize] = useState<"M" | "L" | "Mega" | null>(null)
+  // Auto-select "M" if there's only one size (default size)
+  const hasOnlyDefaultSize = item.sizes && item.sizes.length === 1 && item.sizes[0].size === "M"
+  const [selectedSize, setSelectedSize] = useState<"M" | "L" | "Mega" | null>(
+    hasOnlyDefaultSize ? "M" : null
+  )
   const [isAdding, setIsAdding] = useState(false)
   const { addToCart } = useCart()
 
@@ -52,7 +56,8 @@ export default function MenuCard({ item }: MenuCardProps) {
   }
 
   const handleAddToCart = () => {
-    if (item.sizes && item.sizes.length > 0 && !selectedSize) return
+    // Don't allow adding if item has multiple sizes but no size is selected
+    if (item.sizes && item.sizes.length > 1 && !selectedSize) return
     
     setIsAdding(true)
     addToCart({
@@ -65,7 +70,9 @@ export default function MenuCard({ item }: MenuCardProps) {
     setTimeout(() => setIsAdding(false), 600)
   }
 
-  const isButtonDisabled = isAdding || (item.sizes && item.sizes.length > 0 && !selectedSize)
+  // Check if button should be disabled
+  // Disable only if item has multiple sizes and no size is selected
+  const isButtonDisabled = isAdding || (item.sizes && item.sizes.length > 1 && !selectedSize)
 
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-full w-full border border-gray-200 hover:border-[#e7c078] group">
@@ -114,7 +121,8 @@ export default function MenuCard({ item }: MenuCardProps) {
           </p>
         )}
 
-        {item.sizes && item.sizes.length > 0 && (
+        {/* Size Selection - Only show if more than one size */}
+        {item.sizes && item.sizes.length > 1 && (
           <div className="mb-3">
             <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Choose Size</p>
             <div className="flex gap-1.5">
@@ -143,10 +151,30 @@ export default function MenuCard({ item }: MenuCardProps) {
         <div className="border-t border-gray-100 pt-3 mt-1">
           <div className="flex items-center justify-between mb-3">
             <div>
+              {item.sizes && item.sizes.length > 1 ? (
+                selectedSize ? (
+                  <>
+                    <div className="text-xl font-bold text-[#e7c078]">
+                      ${getCurrentPrice().toFixed(2)}
+                    </div>
+                    <div className="text-[10px] text-gray-500">DA</div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-xl font-bold text-[#e7c078]">
+                      ${Number(item.price).toFixed(2)}
+                    </div>
+                    <div className="text-[10px] text-gray-500">DA</div>
+                  </>
+                )
+              ) : (
+                <>
               <div className="text-xl font-bold text-[#e7c078]">
                 ${getCurrentPrice().toFixed(2)}
               </div>
               <div className="text-[10px] text-gray-500">DA</div>
+                </>
+              )}
             </div>
           </div>
 
@@ -166,7 +194,7 @@ export default function MenuCard({ item }: MenuCardProps) {
                 <span>✓</span>
                 <span>Ajouté!</span>
               </>
-            ) : (item.sizes && item.sizes.length > 0 && !selectedSize) ? (
+            ) : (item.sizes && item.sizes.length > 1 && !selectedSize) ? (
               <>
                 <span>⚠️</span>
                 <span>Sélectionnez une taille</span>

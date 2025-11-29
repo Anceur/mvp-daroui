@@ -44,7 +44,7 @@ export default function Sidebar({ selectedCategory, onSelectCategory, categories
         }}
       >
         {/* Mobile Header */}
-        <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white p-4 flex items-center justify-between border-b border-orange-400">
+        <div className="bg-[#e7c078] text-white p-4 flex items-center justify-between border-b border-[#d9b76b]">
           <h2 className="text-xl font-black">Categories</h2>
           <button
             onClick={onClose}
@@ -67,11 +67,11 @@ export default function Sidebar({ selectedCategory, onSelectCategory, categories
                   onClick={() => handleCategoryClick(category.id)}
                   className={`w-full flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-200 text-base font-semibold ${
                     isSelected
-                      ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105"
-                      : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                      ? "bg-[#e7c078] text-white shadow-lg scale-105"
+                      : "text-gray-700 hover:bg-[#fef7eb] hover:text-[#e7c078]"
                   }`}
                 >
-                  <Icon size={24} className="flex-shrink-0" style={isSelected ? { color: 'white' } : { color: '#f97316' }} />
+                  <Icon size={24} className="flex-shrink-0" style={isSelected ? { color: 'white' } : { color: '#e7c078' }} />
                   <span className="flex-1 text-left">{category.label}</span>
                   {isSelected && (
                     <div className="w-2 h-2 bg-white rounded-full flex-shrink-0"></div>
@@ -88,7 +88,7 @@ export default function Sidebar({ selectedCategory, onSelectCategory, categories
         <div className="h-full overflow-y-auto p-6">
           <div className="mb-6">
             <h2 className="text-xl font-black text-gray-900 mb-2">Categories</h2>
-            <div className="h-1 w-20 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"></div>
+            <div className="h-1 w-20 bg-[#e7c078] rounded-full"></div>
           </div>
           <nav className="space-y-2">
             {categories.map((category) => {
@@ -100,11 +100,11 @@ export default function Sidebar({ selectedCategory, onSelectCategory, categories
                   onClick={() => handleCategoryClick(category.id)}
                   className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 text-base font-semibold ${
                     isSelected
-                      ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg"
-                      : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                      ? "bg-[#e7c078] text-white shadow-lg"
+                      : "text-gray-700 hover:bg-[#fef7eb] hover:text-[#e7c078]"
                   }`}
                 >
-                  <Icon size={20} className="flex-shrink-0" style={isSelected ? { color: 'white' } : { color: '#f97316' }} />
+                  <Icon size={20} className="flex-shrink-0" style={isSelected ? { color: 'white' } : { color: '#e7c078' }} />
                   <span className="flex-1 text-left truncate">{category.label}</span>
                   {isSelected && (
                     <div className="w-2 h-2 bg-white rounded-full flex-shrink-0"></div>

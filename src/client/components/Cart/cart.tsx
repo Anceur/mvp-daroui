@@ -128,7 +128,7 @@ export default function CartDrawer({ isOpen, onClose, tableNumber }: CartDrawerP
 
                   <button
                     onClick={() => setShowOrderType(true)}
-                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white py-3 sm:py-3.5 mt-3 sm:mt-4 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="w-full bg-[#e7c078] hover:bg-[#d9b76b] text-white py-3 sm:py-3.5 mt-3 sm:mt-4 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
                   >
                     Proceed to Checkout
                   </button>
